@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fxbank.dao.AgentMapper">
+	<resultMap id="BaseResultMap" type="com.fxbank.model.Agent">
+		<id column="event_id" property="eventId" jdbcType="INTEGER" />
+		<result column="date" property="date" jdbcType="VARCHAR" />
+		<result column="day" property="day" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="EventsResultMap" type="com.fxbank.model.Agents">
+	    <id column="event_id" property="eventId" jdbcType="INTEGER" />
+		<result column="date" property="date" jdbcType="VARCHAR" />
+		<result column="day" property="day" jdbcType="VARCHAR" />
+		<collection property="event" ofType="com.fxbank.model.Event">
+			<result column="id" property="id" jdbcType="VARCHAR" />
+			<result column="title" property="title" jdbcType="VARCHAR" />
+			<result column="desc" property="desc" jdbcType="VARCHAR" />
+		</collection>
+	</resultMap>
+	<insert id="insert" parameterType="com.fxbank.model.Agent">
+		insert into agent (date,day)
+		values (#{date,jdbcType=VARCHAR},#{day,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.fxbank.model.Agent">
+		insert into agent
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="date != null">
+				date,
+			</if>
+			<if test="eventId != null">
+				event_id,
+			</if>
+			
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="date != null">
+				#{date,jdbcType=VARCHAR},
+			</if>
+			<if test="eventId != null">
+				#{eventId,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	  <select id="findAgents" resultMap="EventsResultMap" parameterType="string" >
+      select agent.date,agent.day,agent.event_id,event.id,event.title,event.desc  from  agent inner join event on  agent.event_id=event.id where agent.date=#{_parameter}
+  </select>
+	 <select id="findAgent" resultMap="BaseResultMap">
+      select *  from  agent  where date=#{sysdate} and day=#{sysday}
+  </select>
+</mapper>

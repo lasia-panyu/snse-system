@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fxbank.dao.PbayesMapper">
+	<resultMap id="BaseResultMap" type="com.fxbank.model.Pbayes">
+		<result column="word" property="word" jdbcType="VARCHAR" />
+		<result column="count" property="count" jdbcType="INTEGER" />
+	</resultMap>
+	<insert id="insert" parameterType="com.fxbank.model.Pbayes">
+		insert into pbayes (word,
+		count)
+		values (#{word,jdbcType=VARCHAR}, #{count,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.fxbank.model.Pbayes">
+		insert into pbayes 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="word != null">
+				word,
+			</if>
+			<if test="count != null">
+				count,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="word != null">
+				#{word,jdbcType=VARCHAR},
+			</if>
+			<if test="count != null">
+				#{count,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<select id="findPbayesBylist" resultMap="BaseResultMap"
+		parameterType="java.util.List">
+		select * from pbayes where
+		<foreach collection="list" item="word" index="index" open=""
+			close="" separator="or ">
+			word=#{word}
+		</foreach>
+	</select>
+	<insert id="classify" parameterType="java.util.Map">
+		insert into pbayes (word,count) values 
+		<foreach collection="entrySet" item="value" index="key" separator=",">
+			 (#{key},${value}) 
+		</foreach>
+	</insert>
+	<update id="update" parameterType="com.fxbank.model.Pbayes">
+		update pbayes set
+		count=count+#{count} where word=#{word}
+	</update>
+</mapper>

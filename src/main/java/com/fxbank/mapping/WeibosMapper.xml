@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fxbank.dao.WeibosMapper">
+	<resultMap id="BaseResultMap" type="com.fxbank.model.Weibos">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="account_id" property="accountId" jdbcType="VARCHAR" />
+		<result column="account_name" property="accountName" jdbcType="VARCHAR" />
+		<result column="attitude" property="attitude" jdbcType="INTEGER" />
+		<result column="repost" property="repost" jdbcType="INTEGER" />
+		<result column="comment" property="comment" jdbcType="INTEGER" />
+		<result column="phone_type" property="phoneType" jdbcType="VARCHAR" />
+		<result column="date" property="date" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="INTEGER" />
+		<result column="content" property="content" jdbcType="LONGVARCHAR" />
+		<result column="classify" property="classify" jdbcType="LONGVARCHAR" />
+		
+	</resultMap>
+	<sql id="Blob_Column_List">
+		content
+	</sql>
+	<insert id="insert" parameterType="com.fxbank.model.Weibos">
+		insert into weibos (account_id, account_name, attitude,
+		repost, comment, phone_type,
+		date, type, content,classify
+		)
+		values (#{accountId,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR},
+		#{attitude,jdbcType=INTEGER},
+		#{repost,jdbcType=INTEGER}, #{comment,jdbcType=INTEGER}, #{phoneType,jdbcType=VARCHAR},
+		#{date,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER},
+		#{content,jdbcType=LONGVARCHAR},#{classify,jdbcType=LONGVARCHAR}
+		)
+	</insert>
+	<select id="findWeiBosByPage" resultMap="BaseResultMap">
+		select * from weibos where date=#{date} 
+      <if test="emontion != null" >
+       and emontion=#{emontion}
+      </if>
+      <if test="emontion == null and state == 0" >
+       and classify =0
+      </if>
+        <if test="emontion == null and state == 1" >
+       and classify =1
+      </if>
+		limit #{page},10
+	</select>
+	<select id="selectCount" resultType="int">
+		select count(*) from weibos where date=#{date} and classify=#{classify}
+	</select>
+	<select id="findAll" resultMap="BaseResultMap">
+		select * from weibos where date=#{_parameter}
+	</select>
+</mapper>

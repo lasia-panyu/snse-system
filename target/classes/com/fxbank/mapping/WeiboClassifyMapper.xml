@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fxbank.dao.WeiboClassifyMapper">
+	<resultMap id="BaseResultMap" type="com.fxbank.model.WeiboClassify">
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="state" property="state" jdbcType="INTEGER" />
+		<result column="classify" property="classify" jdbcType="LONGVARCHAR" />
+		<result column="word" property="word" jdbcType="LONGVARCHAR" />
+		<result column="nbayes" property="nbayes" jdbcType="LONGVARCHAR" />
+		<result column="emontion" property="emontion" jdbcType="LONGVARCHAR" />
+		<result column="content" property="content" jdbcType="LONGVARCHAR" />
+		<result column="date" property="date" jdbcType="LONGVARCHAR" />
+		<result column="account_id" property="accountId" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<insert id="insert" parameterType="com.fxbank.model.WeiboClassify">
+		insert into weiboclassify (id, state, classify,
+		word, nbayes, emontion,
+		content, date, account_id
+		)
+		values (#{id,jdbcType=INTEGER}, #{state,jdbcType=INTEGER},
+		#{classify,jdbcType=LONGVARCHAR},
+		#{word,jdbcType=LONGVARCHAR}, #{nbayes,jdbcType=LONGVARCHAR}, #{emontion,jdbcType=LONGVARCHAR},
+		#{content,jdbcType=LONGVARCHAR}, #{date,jdbcType=LONGVARCHAR},
+		#{accountId,jdbcType=LONGVARCHAR}
+		)
+	</insert>
+	<select id="findWeiboClassifyById" resultMap="BaseResultMap">
+		select * from weiboclassify where id=#{_parameter}
+	</select>
+	<select id="queryStateCount" resultType="int">
+		select count(*) from weiboclassify where date=#{date}
+			<if test="state==0">
+			and (state=1 or state=0) 
+		    </if>
+		    <if test="state==1">
+			and (state=1 or state=0) and emontion is  null
+		    </if>
+		    <if test="state==2">
+            and emontion is not null
+		    </if>
+		    <if test="emontion!=null">
+			and emontion=#{emontion}
+		    </if>
+		    
+	</select>
+	<update id="classiy">
+	   update weiboclassify set emontion=#{emontion} where id=#{id}
+	</update>
+	<select id="findWeiBosByPage" resultMap="BaseResultMap">
+		select * from weiboclassify where date=#{date} 
+      <if test="emontion != null" >
+       and emontion=#{emontion}
+      </if>
+      <if test="emontion == null and state == 0" >
+       and emontion is null
+      </if>
+        <if test="emontion == null and state == 0" >
+       and emontion is not null
+      </if>
+		limit #{page},10
+	</select>
+</mapper>

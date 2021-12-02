@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fxbank.dao.NbayesMapper">
+	<resultMap id="BaseResultMap" type="com.fxbank.model.Nbayes">
+		<result column="word" property="word" jdbcType="VARCHAR" />
+		<result column="count" property="count" jdbcType="INTEGER" />
+	</resultMap>
+	<insert id="insert" parameterType="com.fxbank.model.Nbayes">
+		insert into nbayes (word,
+		count)
+		values (#{word,jdbcType=VARCHAR}, #{count,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.fxbank.model.Nbayes">
+		insert into nbayes 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="word != null">
+				word,
+			</if>
+			<if test="count != null">
+				count,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="word != null">
+				#{word,jdbcType=VARCHAR},
+			</if>
+			<if test="count != null">
+				#{count,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<select id="findNbayesBylist" resultMap="BaseResultMap" parameterType="java.util.List">
+		select * from nbayes where
+		<foreach collection="list" item="word" index="index" open=""
+			close="" separator="or ">
+			word=#{word}
+		</foreach>
+	</select>
+	<insert id="classify" parameterType="java.util.Map">
+		insert into nbayes (word,count) values 
+		<foreach collection="entrySet" item="value" index="key" separator=",">
+			(#{key},${value}); 
+		</foreach>
+	</insert>
+	<update id="update" parameterType="com.fxbank.model.Nbayes">
+		update nbayes set
+		count=count+#{count} where word=#{word}
+	</update>
+</mapper>
